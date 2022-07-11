@@ -60,13 +60,15 @@ int main()
     push(stack, 10);
     push(stack, 20);
     push(stack, 30);
-  
-    printf("%d popped from stack\n", pop(stack));
-    printf("%d popped from stack\n", pop(stack));
-    printf("%d popped from stack\n", pop(stack));
 
-    //Empty
-    printf("%d popped from stack\n", pop(stack));
-  
+    int item = 0;
+    item = pop(stack);
+
+    while(item != -1)
+    {
+        printf("%d popped from stack\n", item);
+        item = pop(stack);
+    }
+
     return 0;
 }
