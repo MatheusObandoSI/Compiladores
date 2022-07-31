@@ -10,46 +10,31 @@ typedef struct Stack
 {
     int top;
     int capacity;
-    char* array;
+    char* characters;
+    int* integers;
 } Stack;
 
-typedef struct IntStack
-{
-    int top;
-    int capacity;
-    int* array;
-} IntStack;
 
-IntStack* icreateStack()
-{
-    IntStack* stack = (IntStack*)malloc(sizeof(IntStack));
-
-    stack->capacity = SIZE;
-    stack->top = -1;
-    stack->array = (int*)malloc(stack->capacity * sizeof(int));
-    
-    return stack;
-}
-
-Stack* createStack()
+Stack* createIntStack()
 {
     Stack* stack = (Stack*)malloc(sizeof(Stack));
 
     stack->capacity = SIZE;
     stack->top = -1;
-    stack->array = (char*)malloc(stack->capacity * sizeof(char));
+    stack->integers = (int*)malloc(stack->capacity * sizeof(int));
     
     return stack;
 }
 
-int iisFull(IntStack* stack)
+Stack* createCharStack()
 {
-    return stack->top == stack->capacity - 1;
-}
-  
-int iisEmpty(IntStack* stack)
-{
-    return stack->top == -1;
+    Stack* stack = (Stack*)malloc(sizeof(Stack));
+
+    stack->capacity = SIZE;
+    stack->top = -1;
+    stack->characters = (char*)malloc(stack->capacity * sizeof(char));
+    
+    return stack;
 }
 
 int isFull(Stack* stack)
@@ -63,29 +48,29 @@ int isEmpty(Stack* stack)
 }
 
 
-void ipush(IntStack* stack, int item)
+void ipush(Stack* stack, int item)
 {
-    if (iisFull(stack))
+    if (isFull(stack))
     {
         return;
     }
 
-    stack->array[++stack->top] = item;
+    stack->integers[++stack->top] = item;
 }
   
-int ipop(IntStack* stack)
+int ipop(Stack* stack)
 {
-    if (iisEmpty(stack))
+    if (isEmpty(stack))
         return -1;
 
-    int top = stack->array[stack->top];
+    int top = stack->integers[stack->top];
     stack->top = --stack->top;
     return top;
 }
 
-int itop(IntStack* stack)
+int itop(Stack* stack)
 {
-    return stack->array[stack->top];
+    return stack->integers[stack->top];
 }
 
 void push(Stack* stack, char item)
@@ -94,7 +79,7 @@ void push(Stack* stack, char item)
     {
         return;
     }
-    stack->array[++stack->top] = item;
+    stack->characters[++stack->top] = item;
 }
   
 char pop(Stack* stack)
@@ -102,18 +87,18 @@ char pop(Stack* stack)
     if (isEmpty(stack))
         return '\n';
 
-    char top = stack->array[stack->top];
+    char top = stack->characters[stack->top];
     stack->top = --stack->top;
     return top;
 }
 
 char top(Stack* stack)
 {
-    return stack->array[stack->top];
+    return stack->characters[stack->top];
 }
 
 
-int precedence(char ch) 
+int opPrecedence(char ch) 
 {
     if (ch == '+' || ch == '-')
     {
@@ -128,7 +113,6 @@ int precedence(char ch)
         return -1; 
     }
 } 
-
 
 
 int isOperator(char c)
@@ -166,8 +150,8 @@ float doOperation(char operator, float x, float y)
 int convertInfixToPostfix(char* expression) 
 { 
 
-    Stack* postfixStack = createStack();
-    
+    Stack* postfixStack = createCharStack();
+
     int i, j;
 
     for (i = 0, j = -1; expression[i]; ++i) 
@@ -197,7 +181,7 @@ int convertInfixToPostfix(char* expression)
         }
         else // if an operator
         { 
-            while (!isEmpty(postfixStack) && precedence(expression[i]) <= precedence(top(postfixStack))) 
+            while (!isEmpty(postfixStack) && opPrecedence(expression[i]) <= opPrecedence(top(postfixStack))) 
                 expression[++j] = pop(postfixStack); 
             push(postfixStack, expression[i]); 
         } 
@@ -216,7 +200,7 @@ int convertInfixToPostfix(char* expression)
 int evaluatePostfix(char* exp)
 {
     // Create a stack of capacity equal to expression size
-    IntStack* stack = icreateStack();
+    Stack* stack = createIntStack();
     int i;
   
     // See if stack was created successfully
@@ -247,12 +231,10 @@ int evaluatePostfix(char* exp)
     }
     return ipop(stack);
 }
-
-
   
 int main()
 {
-    Stack* stack = createStack();
+    Stack* stack = createCharStack();
 
     /*String split example*/
     char str[] = "5 + 4 + 3 * 7";
@@ -264,7 +246,6 @@ int main()
     int result = evaluatePostfix(expression);
     printf("\nRESULT: %d\n", result);
 
-    //Token formats are ""
     // while (pch != NULL)
     // {
     //     printf ("%s ",pch);
