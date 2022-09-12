@@ -1,3 +1,6 @@
+*.tab.*
+*.lex.*
+
 # Prerequisites
 *.d
 
