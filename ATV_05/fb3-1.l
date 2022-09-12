@@ -21,6 +21,10 @@ EXP ([Ee][-+]?[0-9]+)
 "(" |
 ")" { return yytext[0]; }
 
+"obmc" { return START_COMP; }
+
+([a-zA-Z][a-zA-Z0-9]*)\.(calc)$ { yylval.s = yytext; return CALC_SCRIPT; }
+
 [0-9]+"."[0-9]*{EXP}? |
 "."?[0-9]+{EXP}? { yylval.d = atof(yytext); return NUMBER; }
 

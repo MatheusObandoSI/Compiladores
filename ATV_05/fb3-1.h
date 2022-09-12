@@ -22,4 +22,5 @@ struct ast *newnum(double d);
 /* evaluate an AST */
 double eval(struct ast *);
 /* delete and free an AST */
+int opencalc(char *file);
 void treefree(struct ast *);

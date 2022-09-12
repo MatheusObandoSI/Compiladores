@@ -101,15 +101,15 @@ void yyerror(char *s, ...)
     fprintf(stderr, "\n");
 }
 
-// int main()
-// {
-//     printf("> ");
-//     return yyparse();
-// }
+int opencalc(char *file)
+{
+    yyin = fopen(file, "r");
+    return yyparse();
+    fclose(yyin);
+}
 
 int main(int argc, char *argv[])
 {
-    yyin = fopen("expressions.calc", "r");
-    yyparse();
-    fclose(yyin);
+    printf("> ");
+    return yyparse();
 }
