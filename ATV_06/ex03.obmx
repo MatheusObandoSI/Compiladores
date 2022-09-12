@@ -1,9 +1,0 @@
-float celsius;
-float farenheit;
-
-print("Insira a temperatura em Farenheit: ");
-read(farenheit);
-
-celsius = 5*((farenheit-32)/9);
-
-print("Temperatura em Celsius: {celsius}");

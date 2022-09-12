@@ -7,43 +7,63 @@
 
 %union {
  struct ast *a;
- char* s;
+ char *s;
  double d;
 }
 
 %token START_COMP 
-
-%token <s> CALC_SCRIPT
-%token <s> OBMX_SCRIPT
-
-%token IF
-%token ELSE
-%token WHILE
-%token DO
-
 %token PRINT
 %token READ
-
 %token EOL
+%token SEMI_COLON
+%token ASSIGN
 
 %left '+' '-'
 %left '*' '/'
 %nonassoc '|' UMINUS
 
-%token <d> NUMBER
 %type <a> EXP
+%token <d> NUMBER
 %token <s> NAME
+%token <s> STR
+%token <s> CALC_SCRIPT
+%token <s> OBMX_SCRIPT
+
+%token CHAR
+%token INT
+%token FLOAT 
+%token DOUBLE
 
 %%
 
 STATEMENT: 
-| STATEMENT EOL
+| STATEMENT EOL {
+    printf("> ");
+    return yyparse();}
 | STATEMENT EXP { 
     printf("= %4.4g\n", eval($2));
     treefree($2); }
 | STATEMENT START_COMP CALC_SCRIPT { openscript($3); }
-| STATEMENT PRINT '('  NAME  ')' ';' { printf("%s\n", $4); }
+| STATEMENT START_COMP OBMX_SCRIPT { openscript($3); }
+| STATEMENT PRINT '(' STR ')' SEMI_COLON { printf("%s\n", $4); }
+;
 
+VARIABLE: NAME
+;
+
+TYPE: 
+INT 
+| FLOAT 
+| DOUBLE
+;
+
+VALUE: NUMBER
+; 
+
+DECLARATION:
+DECLARATION TYPE VARIABLE SEMI_COLON
+| DECLARATION VARIABLE ASSIGN VALUE SEMI_COLON;
+;
 
 EXP: 
  EXP '+' EXP { $$ = newast('+', $1,$3); }
