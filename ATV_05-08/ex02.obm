@@ -1,0 +1,7 @@
+float a;
+float b;
+print("Insira o primeiro valor: ");
+read(a);
+print("Insira o segundo valor: ");
+read(b);
+print(a+b);
