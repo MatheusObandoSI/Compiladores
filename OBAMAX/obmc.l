@@ -55,11 +55,12 @@ EXP ([Ee][-+]?[0-9]+)
 
 ";" { return SEMI_COLON; }
 "=" { return ASSIGN; }
-\n { return EOL;}
+\n { return EOL; }
 
  /* Ignore */
 "//".* ; 
-[ \t]+ ;
+[\t]+ ;
+[[:space:]] ;
 . { yyerror("Mystery character %c\n", *yytext); }
 
 %%
