@@ -33,27 +33,24 @@
 %token INT
 %token FLOAT 
 %token DOUBLE
-%token QUOTE
 
 %%
 
 STATEMENT:
-| STATEMENT EOL{
+| STATEMENT EOL {
     printf("> ");
     return yyparse();}
 | STATEMENT EXP { 
     printf("= %4.4g\n", eval($2));
     treefree($2); }
-| STATEMENT START_COMP CALC_SCRIPT { readscript($3); }
-| STATEMENT START_COMP OBM_SCRIPT { readscript($3); }
-| STATEMENT PRINT '(' STR ')' SEMI_COLON { printf("%s\n", $4); }
-| STATEMENT READ '(' VARIABLE ')' SEMI_COLON { printf("Statement read value \n"); }
-| STATEMENT DECLARATION { printf("Statement declaration \n"); }
-| STATEMENT ASSIGNMENT { printf("Statement assignment \n"); }
+| START_COMP CALC_SCRIPT { readscript($2); }
+| START_COMP OBM_SCRIPT { readscript($2); }
+| PRINT '(' STR ')' SEMI_COLON { printf("%s\n", $3); }
+| READ '(' NAME ')' SEMI_COLON { printf("Statement read value \n"); }
+| DECLARATION SEMI_COLON { printf("Statement declaration \n"); }
+| ASSIGNMENT SEMI_COLON { printf("Statement assignment \n"); }
 ;
 
-VARIABLE: NAME
-;
  
 TYPE: INT | FLOAT | DOUBLE | CHAR
 ;
@@ -62,23 +59,23 @@ VALUE: NAME | NUMBER | EXP
 ;
 
 ASSIGNMENT: 
-VARIABLE ASSIGN VALUE SEMI_COLON
+NAME ASSIGN VALUE
 ;
 
 DECLARATION:
-TYPE VARIABLE SEMI_COLON
-| TYPE VARIABLE ASSIGN VALUE SEMI_COLON
+TYPE NAME
+| TYPE NAME ASSIGN VALUE
 ;
 
 EXP: 
- EXP '+' EXP { $$ = newast('+', $1,$3); }
- | EXP '-' EXP { $$ = newast('-', $1,$3);}
- | EXP '*' EXP { $$ = newast('*', $1,$3); }
- | EXP '/' EXP { $$ = newast('/', $1,$3); }
- | '|' EXP { $$ = newast('|', $2, NULL); }
- | '(' EXP ')' { $$ = $2; }
- | '-' EXP %prec UMINUS{ $$ = newast('M', NULL, $2); }
- | NUMBER { $$ = newnum($1); }
- ;
+EXP '+' EXP { $$ = newast('+', $1,$3); }
+| EXP '-' EXP { $$ = newast('-', $1,$3);}
+| EXP '*' EXP { $$ = newast('*', $1,$3); }
+| EXP '/' EXP { $$ = newast('/', $1,$3); }
+| '|' EXP { $$ = newast('|', $2, NULL); }
+| '(' EXP ')' { $$ = $2; }
+| '-' EXP %prec UMINUS{ $$ = newast('M', $2, NULL); }
+| NUMBER { $$ = newnum($1); }
+;
 
 %%

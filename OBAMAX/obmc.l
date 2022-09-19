@@ -35,16 +35,27 @@ EXP ([Ee][-+]?[0-9]+)
  /* Names */
 ([a-zA-Z][a-zA-Z0-9]+)\.(calc)$ {  yylval.s = yytext; return CALC_SCRIPT; }
 ([a-zA-Z][a-zA-Z0-9]+)\.(obm)$ {  yylval.s = yytext; return OBM_SCRIPT; }
-[a-zA-Z][a-zA-Z0-9]* { yylval.s = yytext; return NAME; }
-(\"(.+?)\") { yylval.s = yytext; return STR; }
+
+[a-zA-Z][a-zA-Z0-9]* { yylval.s = yytext; return NAME; } //Variable
+
+ /* Double quoted string */
+["]([^"\\\n]|\\(.|\n))*["] {  yylval.s = malloc(yyleng -1);
+          memcpy(yylval.s, yytext + 1, yyleng - 2);
+          yylval.s[yyleng - 2] = 0; 
+          return STR;}
+
+ /* Single quoted strings */
+[']([^'\\\n]|\\(.|\n))*['] {  yylval.s = malloc(yyleng -1);
+          memcpy(yylval.s, yytext + 1, yyleng - 2);
+          yylval.s[yyleng - 2] = 0; 
+          return STR;}
 
 [0-9]+"."[0-9]*{EXP}? | 
 "."?[0-9]+{EXP}? { yylval.d = atof(yytext); return NUMBER; }
 
 ";" { return SEMI_COLON; }
 "=" { return ASSIGN; }
-\n { return EOL; }
-\" { return QUOTE; }
+\n { return EOL;}
 
  /* Ignore */
 "//".* ; 
