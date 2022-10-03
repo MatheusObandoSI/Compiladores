@@ -7,7 +7,9 @@
 
 %union {
  struct ast *a;
- char *s;
+ char *str;
+ struct symbol *s; /* which symbol */
+ struct symlist *sl;
  double d;
 }
 
@@ -25,9 +27,9 @@
 %type <a> EXP
 %token <d> NUMBER
 %token <s> NAME
-%token <s> STR
-%token <s> CALC_SCRIPT
-%token <s> OBM_SCRIPT
+%token <str> STR
+%token <str> CALC_SCRIPT
+%token <str> OBM_SCRIPT
 
 %token CHAR
 %token INT
@@ -46,6 +48,7 @@ STATEMENT:
 | START_COMP CALC_SCRIPT { readscript($2); }
 | START_COMP OBM_SCRIPT { readscript($2); }
 | PRINT '(' STR ')' SEMI_COLON { printf("%s\n", $3); }
+| PRINT '(' EXP ')' SEMI_COLON { printf("%g\n", eval($3));}
 | READ '(' NAME ')' SEMI_COLON { printf("Statement read value \n"); }
 | DECLARATION SEMI_COLON { printf("Statement declaration \n"); }
 | ASSIGNMENT SEMI_COLON { printf("Statement assignment \n"); }
@@ -76,6 +79,8 @@ EXP '+' EXP { $$ = newast('+', $1,$3); }
 | '(' EXP ')' { $$ = $2; }
 | '-' EXP %prec UMINUS{ $$ = newast('M', $2, NULL); }
 | NUMBER { $$ = newnum($1); }
+| NAME { $$ = newref($1); }
+| NAME ASSIGN EXP { $$ = newasgn($1, $3); }
 ;
 
 %%

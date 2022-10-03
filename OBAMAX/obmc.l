@@ -33,21 +33,21 @@ EXP ([Ee][-+]?[0-9]+)
 "obmc" { return START_COMP; }
 
  /* Names */
-([a-zA-Z][a-zA-Z0-9]+)\.(calc)$ {  yylval.s = yytext; return CALC_SCRIPT; }
-([a-zA-Z][a-zA-Z0-9]+)\.(obm)$ {  yylval.s = yytext; return OBM_SCRIPT; }
+([a-zA-Z][a-zA-Z0-9]+)\.(calc)$ {  yylval.str = yytext; return CALC_SCRIPT; }
+([a-zA-Z][a-zA-Z0-9]+)\.(obm)$ {  yylval.str = yytext; return OBM_SCRIPT; }
 
-[a-zA-Z][a-zA-Z0-9]* { yylval.s = yytext; return NAME; } //Variable
+[a-zA-Z][a-zA-Z0-9]* { yylval.str = yytext; return NAME; } //Variable
 
  /* Double quoted string */
-["]([^"\\\n]|\\(.|\n))*["] {  yylval.s = malloc(yyleng -1);
-          memcpy(yylval.s, yytext + 1, yyleng - 2);
-          yylval.s[yyleng - 2] = 0; 
+["]([^"\\\n]|\\(.|\n))*["] {  yylval.str = malloc(yyleng -1);
+          memcpy(yylval.str, yytext + 1, yyleng - 2);
+          yylval.str[yyleng - 2] = 0; 
           return STR;}
 
  /* Single quoted strings */
-[']([^'\\\n]|\\(.|\n))*['] {  yylval.s = malloc(yyleng -1);
-          memcpy(yylval.s, yytext + 1, yyleng - 2);
-          yylval.s[yyleng - 2] = 0; 
+[']([^'\\\n]|\\(.|\n))*['] {  yylval.str = malloc(yyleng -1);
+          memcpy(yylval.str, yytext + 1, yyleng - 2);
+          yylval.str[yyleng - 2] = 0; 
           return STR;}
 
 [0-9]+"."[0-9]*{EXP}? | 
