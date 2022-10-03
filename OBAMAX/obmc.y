@@ -48,9 +48,10 @@ STATEMENT:
 | START_COMP OBM_SCRIPT { readscript($2); }
 | PRINT '(' STR ')' SEMI_COLON { printf("%s\n", $3); }
 | PRINT '(' EXP ')' SEMI_COLON { printf("%g\n", eval($3));}
+| PRINT '(' NAME ')' SEMI_COLON { printf("%g\n", lookup($3)->value);}
 | READ '(' NAME ')' SEMI_COLON { printf("Statement read \n"); }
-| TYPE NAME SEMI_COLON { printf("Statement declaration\n"); }
-| NAME ASSIGN NUMBER SEMI_COLON { printf("Statement assignment\n"); }
+| TYPE NAME SEMI_COLON { lookup($2); }
+| NAME ASSIGN NUMBER SEMI_COLON {insert($1, $3); }
 ;
 
  

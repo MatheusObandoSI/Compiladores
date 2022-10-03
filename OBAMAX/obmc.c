@@ -15,12 +15,30 @@ static unsigned symhash(char *sym)
     return hash;
 }
 
-void insert(char * name, struct symbol * s)
+void insert(char *sym, double value)
 {
-    // Insert symbol on hash table
+    struct symbol *sp = &symtab[symhash(sym) % NHASH];
+    int scount = NHASH; /* how many have we looked at */
+    while (--scount >= 0)
+    {
+        if (sp->name && !strcmp(sp->name, sym))
+        {
+            sp->value = value; 
+        }
+        if (!sp->name)
+        { /* new entry */
+            sp->name = strdup(sym);
+            sp->value = value;
+            return;
+        }
+        if (++sp >= symtab + NHASH)
+            sp = symtab; /* try the next entry */
+    }
+    yyerror("symbol table overflow\n");
+    abort(); /* tried them all, table is full */
 }
 
-struct symbol * lookup(char *sym)
+struct symbol *lookup(char *sym)
 {
     struct symbol *sp = &symtab[symhash(sym) % NHASH];
     int scount = NHASH; /* how many have we looked at */
@@ -43,7 +61,33 @@ struct symbol * lookup(char *sym)
     abort(); /* tried them all, table is full */
 }
 
-struct ast * newast(int nodetype, struct ast *l, struct ast *r)
+struct symlist *
+newsymlist(struct symbol *sym, struct symlist *next)
+{
+    struct symlist *sl = malloc(sizeof(struct symlist));
+
+    if (!sl)
+    {
+        yyerror("out of space");
+        exit(0);
+    }
+    sl->sym = sym;
+    sl->next = next;
+    return sl;
+}
+/* free a list of symbols */
+void symlistfree(struct symlist *sl)
+{
+    struct symlist *nsl;
+    while (sl)
+    {
+        nsl = sl->next;
+        free(sl);
+        sl = nsl;
+    }
+}
+
+struct ast *newast(int nodetype, struct ast *l, struct ast *r)
 {
     struct ast *a = malloc(sizeof(struct ast));
 
@@ -58,7 +102,7 @@ struct ast * newast(int nodetype, struct ast *l, struct ast *r)
     return a;
 }
 
-struct ast * newnum(double d)
+struct ast *newnum(double d)
 {
     struct numval *a = malloc(sizeof(struct numval));
 
