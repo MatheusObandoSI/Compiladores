@@ -1,12 +1,49 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 #include "obmc.h"
 
 FILE *yyin;
 
-struct ast *
-newast(int nodetype, struct ast *l, struct ast *r)
+static unsigned symhash(char *sym)
+{
+    unsigned int hash = 0;
+    unsigned c;
+    while (c = *sym++)
+        hash = hash * 9 ^ c;
+    return hash;
+}
+
+void insert(char * name, struct symbol * s)
+{
+    // Insert symbol on hash table
+}
+
+struct symbol * lookup(char *sym)
+{
+    struct symbol *sp = &symtab[symhash(sym) % NHASH];
+    int scount = NHASH; /* how many have we looked at */
+    while (--scount >= 0)
+    {
+        if (sp->name && !strcmp(sp->name, sym))
+        {
+            return sp;
+        }
+        if (!sp->name)
+        { /* new entry */
+            sp->name = strdup(sym);
+            sp->value = 0;
+            return sp;
+        }
+        if (++sp >= symtab + NHASH)
+            sp = symtab; /* try the next entry */
+    }
+    yyerror("symbol table overflow\n");
+    abort(); /* tried them all, table is full */
+}
+
+struct ast * newast(int nodetype, struct ast *l, struct ast *r)
 {
     struct ast *a = malloc(sizeof(struct ast));
 
@@ -21,8 +58,7 @@ newast(int nodetype, struct ast *l, struct ast *r)
     return a;
 }
 
-struct ast *
-newnum(double d)
+struct ast * newnum(double d)
 {
     struct numval *a = malloc(sizeof(struct numval));
 
@@ -36,8 +72,7 @@ newnum(double d)
     return (struct ast *)a;
 }
 
-double
-eval(struct ast *a)
+double eval(struct ast *a)
 {
     double v;
     switch (a->nodetype)
@@ -70,6 +105,7 @@ eval(struct ast *a)
     }
     return v;
 }
+
 void treefree(struct ast *a)
 {
     switch (a->nodetype)
@@ -85,14 +121,16 @@ void treefree(struct ast *a)
     case 'M':
         treefree(a->l);
     case 'K':
-        free(a);
+    case 'N':
         break;
     default:
         printf("internal error: free bad node %c\n", a->nodetype);
     }
+
+    free(a); /* always free the node itself */
 }
 
-int readscript(char* file)
+int readscript(char *file)
 {
     yyin = fopen(file, "r");
     return yyparse();
@@ -110,19 +148,15 @@ void yyerror(char *s, ...)
 
 int main(int argc, char *argv[])
 {
-    // printf("> ");
-    // return yyparse();
 
-    if(argc == 1)
+    if (argc == 1)
     {
-        printf("> ");
         return yyparse();
     }
 
     else if (argc == 2)
     {
         yyin = fopen(argv[1], "r");
-        printf("> ");
         return yyparse();
     }
 }

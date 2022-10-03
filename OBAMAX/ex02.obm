@@ -1,7 +1,9 @@
 float a;
 float b;
+float c;
 print("Insira o primeiro valor: ");
-read(a);
+a = 2;
 print("Insira o segundo valor: ");
-read(b);
-print(a+b);
+b = 4;
+print(b);
+c = a + b;
