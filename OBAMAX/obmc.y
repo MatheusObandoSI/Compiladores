@@ -52,6 +52,7 @@ STATEMENT:
 | READ '(' NAME ')' SEMI_COLON { printf("Statement read \n"); }
 | TYPE NAME SEMI_COLON { lookup($2); }
 | NAME ASSIGN NUMBER SEMI_COLON {insert($1, $3); }
+| NAME ASSIGN EXP SEMI_COLON {insert($1, eval($3)); }
 ;
 
  
