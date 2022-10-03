@@ -7,4 +7,5 @@ print("Insira o segundo valor: ");
 b = 4;
 print(a);
 print(b);
+print(a + b);
 c = a + b;

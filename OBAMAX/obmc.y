@@ -79,7 +79,7 @@ EXP '+' EXP { $$ = newast('+', $1,$3); }
 | '(' EXP ')' { $$ = $2; }
 | '-' EXP %prec UMINUS{ $$ = newast('M', $2, NULL); }
 | NUMBER { $$ = newnum($1); }
-| NAME { /*$$ = lookup($1)->value;*/ }
+| NAME { $$ = newnum(lookup($1)->value); }
 ;
 
 %%
