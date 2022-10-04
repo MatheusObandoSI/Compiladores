@@ -26,7 +26,7 @@
 
 %type <a> EXP
 %token <d> NUMBER
-%token <s> NAME
+%token <str> NAME
 %token <str> STR
 %token <str> CALC_SCRIPT
 %token <str> OBM_SCRIPT
@@ -40,7 +40,6 @@
 
 STATEMENT:
 | STATEMENT EOL {
-    printf("> ");
     return yyparse();}
 | STATEMENT EXP { 
     printf("= %4.4g\n", eval($2));
@@ -49,16 +48,18 @@ STATEMENT:
 | START_COMP OBM_SCRIPT { readscript($2); }
 | PRINT '(' STR ')' SEMI_COLON { printf("%s\n", $3); }
 | PRINT '(' EXP ')' SEMI_COLON { printf("%g\n", eval($3));}
-| READ '(' NAME ')' SEMI_COLON { printf("Statement read value \n"); }
-| DECLARATION SEMI_COLON { printf("Statement declaration \n"); }
-| ASSIGNMENT SEMI_COLON { printf("Statement assignment \n"); }
+| PRINT '(' NAME ')' SEMI_COLON { printf("%g\n", lookup($3)->value);}
+| READ '(' NAME ')' SEMI_COLON { printf("Statement read \n"); }
+| TYPE NAME SEMI_COLON { lookup($2); }
+| NAME ASSIGN NUMBER SEMI_COLON {insert($1, $3); }
+| NAME ASSIGN EXP SEMI_COLON {insert($1, eval($3)); }
 ;
 
  
 TYPE: INT | FLOAT | DOUBLE | CHAR
 ;
 
-VALUE: NAME | NUMBER | EXP
+VALUE: NUMBER | EXP
 ;
 
 ASSIGNMENT: 
@@ -79,8 +80,7 @@ EXP '+' EXP { $$ = newast('+', $1,$3); }
 | '(' EXP ')' { $$ = $2; }
 | '-' EXP %prec UMINUS{ $$ = newast('M', $2, NULL); }
 | NUMBER { $$ = newnum($1); }
-| NAME { $$ = newref($1); }
-| NAME ASSIGN EXP { $$ = newasgn($1, $3); }
+| NAME { $$ = newnum(lookup($1)->value); }
 ;
 
 %%

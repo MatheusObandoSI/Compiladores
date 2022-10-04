@@ -36,7 +36,7 @@ EXP ([Ee][-+]?[0-9]+)
 ([a-zA-Z][a-zA-Z0-9]+)\.(calc)$ {  yylval.str = yytext; return CALC_SCRIPT; }
 ([a-zA-Z][a-zA-Z0-9]+)\.(obm)$ {  yylval.str = yytext; return OBM_SCRIPT; }
 
-[a-zA-Z][a-zA-Z0-9]* { yylval.str = yytext; return NAME; } //Variable
+[a-zA-Z][a-zA-Z0-9]* { yylval.s = lookup(yytext); return NAME; }
 
  /* Double quoted string */
 ["]([^"\\\n]|\\(.|\n))*["] {  yylval.str = malloc(yyleng -1);
