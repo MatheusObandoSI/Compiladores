@@ -49,26 +49,16 @@ STATEMENT:
 | PRINT '(' STR ')' SEMI_COLON { printf("%s\n", $3); }
 | PRINT '(' EXP ')' SEMI_COLON { printf("%g\n", eval($3));}
 | PRINT '(' NAME ')' SEMI_COLON { printf("%g\n", lookup($3)->value);}
-| READ '(' NAME ')' SEMI_COLON { printf("Statement read \n"); }
+| READ '(' NAME ')' SEMI_COLON { printf("Statement read \n"); 
+                                    char in[50];
+                                    fgets(in, sizeof(in), stdin);
+                                    insert($3, atof(in));}
 | TYPE NAME SEMI_COLON { lookup($2); }
 | NAME ASSIGN NUMBER SEMI_COLON {insert($1, $3); }
 | NAME ASSIGN EXP SEMI_COLON {insert($1, eval($3)); }
 ;
 
- 
 TYPE: INT | FLOAT | DOUBLE | CHAR
-;
-
-VALUE: NUMBER | EXP
-;
-
-ASSIGNMENT: 
-NAME ASSIGN VALUE
-;
-
-DECLARATION:
-TYPE NAME
-| TYPE NAME ASSIGN VALUE
 ;
 
 EXP: 
